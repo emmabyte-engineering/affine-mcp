@@ -36,13 +36,14 @@ async function main() {
   const socket = createSocket(config, cookie);
   socket.connect();
   try {
-    const results = await searchDocs(
+    const { results, docsSearched, docsSkipped } = await searchDocs(
       socket,
       "98e629ce-f10b-4389-9eab-370eaff83026",
       query,
       allDocs.map((d) => d.id)
     );
 
+    console.log(`Searched ${docsSearched} docs, skipped ${docsSkipped}`);
     if (results.length === 0) {
       console.log("No results found.");
     } else {

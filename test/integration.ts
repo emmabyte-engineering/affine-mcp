@@ -371,10 +371,10 @@ console.log("hello from affine-mcp");
   section("Search Docs");
   try {
     const allDocIds = [...existingDocIds, createdDocId];
-    const results = await useSocket(config, cookie, (socket) =>
+    const { results, docsSearched, docsSkipped } = await useSocket(config, cookie, (socket) =>
       searchDocs(socket, workspaceId, "Replaced", allDocIds)
     );
-    assert(results.length > 0, `Found ${results.length} result(s) for "Replaced"`);
+    assert(results.length > 0, `Found ${results.length} result(s) for "Replaced" (${docsSearched} searched, ${docsSkipped} skipped)`);
   } catch (err: any) {
     assert(false, `Search failed: ${err.message}`);
   }
