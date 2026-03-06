@@ -2,6 +2,7 @@
  * E2E test setup: waits for AFFiNE to be healthy, then creates the admin user.
  * Used by CI before running integration tests.
  */
+import "dotenv/config";
 
 const AFFINE_URL = process.env.AFFINE_BASE_URL || "http://localhost:3010";
 const TEST_EMAIL = requireEnv("AFFINE_EMAIL");
