@@ -3,4 +3,4 @@ dist/
 .env
 .env.local
 .claude/settings.local.json
-./claude
+.claude

@@ -42,25 +42,25 @@ An open-source [Model Context Protocol (MCP)](https://modelcontextprotocol.io) s
 The fastest way to get started. No installation required — just configure your AI tool to run:
 
 ```
-npx affine-mcp
+npx @emmabyte-eng/affine-mcp
 ```
 
 ### Option 2: Docker
 
 ```bash
-docker build -t affine-mcp .
+docker build -t emmabyteeng/affine-mcp .
 ```
 
 Then configure your AI tool to run:
 
 ```
-docker run -i --rm -e AFFINE_BASE_URL -e AFFINE_EMAIL -e AFFINE_PASSWORD affine-mcp
+docker run -i --rm -e AFFINE_BASE_URL -e AFFINE_EMAIL -e AFFINE_PASSWORD emmabyteeng/affine-mcp
 ```
 
 ### Option 3: Global install
 
 ```bash
-npm install -g affine-mcp
+npm install -g @emmabyte-eng/affine-mcp
 ```
 
 Then configure your AI tool to run:
@@ -72,7 +72,7 @@ affine-mcp
 ### Option 4: From source
 
 ```bash
-git clone https://github.com/nicholasgriffintn/affine-mcp.git
+git clone https://github.com/emmabyte-engineering/affine-mcp.git
 cd affine-mcp
 npm install
 npm run build
@@ -128,7 +128,7 @@ Edit your Claude Desktop config file:
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -154,7 +154,7 @@ Edit your Claude Desktop config file:
         "-e", "AFFINE_BASE_URL",
         "-e", "AFFINE_EMAIL",
         "-e", "AFFINE_PASSWORD",
-        "affine-mcp"
+        "emmabyteeng/affine-mcp"
       ],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
@@ -175,7 +175,7 @@ Edit your Claude Desktop config file:
 {
   "mcpServers": {
     "affine": {
-      "command": "affine-mcp",
+      "command": "@emmabyte-eng/affine-mcp",
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -193,7 +193,7 @@ Edit your Claude Desktop config file:
 Run this from your terminal:
 
 ```bash
-claude mcp add affine -- npx affine-mcp \
+claude mcp add affine -- npx @emmabyte-eng/affine-mcp \
   --env AFFINE_BASE_URL=https://affine.example.com \
   --env AFFINE_EMAIL=you@example.com \
   --env AFFINE_PASSWORD=your-password
@@ -206,7 +206,7 @@ Or add it to your project's `.claude/settings.json`:
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -226,7 +226,7 @@ Open **Cursor Settings → MCP** and add a server, or edit `~/.cursor/mcp.json`:
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -246,7 +246,7 @@ Open **Windsurf Settings → MCP** or edit `~/.codeium/windsurf/mcp_config.json`
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -267,7 +267,7 @@ Add to your VS Code `settings.json` or `.vscode/mcp.json`:
     "servers": {
       "affine": {
         "command": "npx",
-        "args": ["affine-mcp"],
+        "args": ["@emmabyte-eng/affine-mcp"],
         "env": {
           "AFFINE_BASE_URL": "https://affine.example.com",
           "AFFINE_EMAIL": "you@example.com",
@@ -289,7 +289,7 @@ Add to your Zed settings (`~/.config/zed/settings.json`):
     "affine": {
       "command": {
         "path": "npx",
-        "args": ["affine-mcp"],
+        "args": ["@emmabyte-eng/affine-mcp"],
         "env": {
           "AFFINE_BASE_URL": "https://affine.example.com",
           "AFFINE_EMAIL": "you@example.com",
@@ -310,7 +310,7 @@ Open the Cline MCP settings in VS Code, or edit `~/Library/Application Support/C
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -330,7 +330,7 @@ Edit the Roo Code MCP settings:
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -350,7 +350,7 @@ Edit `~/.aws/amazonq/mcp.json`:
   "mcpServers": {
     "affine": {
       "command": "npx",
-      "args": ["affine-mcp"],
+      "args": ["@emmabyte-eng/affine-mcp"],
       "env": {
         "AFFINE_BASE_URL": "https://affine.example.com",
         "AFFINE_EMAIL": "you@example.com",
@@ -365,8 +365,8 @@ Edit `~/.aws/amazonq/mcp.json`:
 
 Any MCP-compatible client that supports stdio transport can use this server. The general pattern is:
 
-- **Command:** `npx` (or `node`, `docker`, `affine-mcp`)
-- **Args:** `["affine-mcp"]` (for npx)
+- **Command:** `npx` (or `node`, `docker`, `@emmabyte-eng/affine-mcp`)
+- **Args:** `["@emmabyte-eng/affine-mcp"]` (for npx)
 - **Transport:** stdio
 - **Environment variables:** `AFFINE_BASE_URL`, `AFFINE_EMAIL`, `AFFINE_PASSWORD`
 

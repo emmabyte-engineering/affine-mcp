@@ -1,5 +1,5 @@
 {
-  "name": "affine-mcp",
+  "name": "@emmabyte-eng/affine-mcp",
   "version": "1.0.0",
   "description": "MCP server for self-hosted AFFiNE instances — read, write, search, and manage docs, tables, diagrams, and comments",
   "type": "module",
@@ -25,8 +25,16 @@
     "knowledge-base",
     "wiki"
   ],
-  "author": "",
+  "author": "Emmabyte Engineering",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emmabyte-engineering/affine-mcp.git"
+  },
+  "homepage": "https://github.com/emmabyte-engineering/affine-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/emmabyte-engineering/affine-mcp/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
     "markdown-it": "^14.1.1",
