@@ -59,14 +59,14 @@ jobs:
         env:
           AFFINE_BASE_URL: http://localhost:3010
           AFFINE_EMAIL: ${{ vars.TEST_AFFINE_EMAIL || 'test@affine-mcp.local' }}
-          AFFINE_PASSWORD: ${{ secrets.TEST_AFFINE_PASSWORD }}
+          AFFINE_PASSWORD: ${{ secrets.TEST_AFFINE_PASSWORD || 'test-password-for-ci' }}
 
       - name: Run e2e tests
         run: npm run test:e2e
         env:
           AFFINE_BASE_URL: http://localhost:3010
           AFFINE_EMAIL: ${{ vars.TEST_AFFINE_EMAIL || 'test@affine-mcp.local' }}
-          AFFINE_PASSWORD: ${{ secrets.TEST_AFFINE_PASSWORD }}
+          AFFINE_PASSWORD: ${{ secrets.TEST_AFFINE_PASSWORD || 'test-password-for-ci' }}
 
       - name: Dump AFFiNE logs on failure
         if: failure()
