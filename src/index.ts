@@ -22,7 +22,7 @@ import {
   LIST_DOCS,
   GET_DOC,
 } from "./graphql.js";
-import { createSocket, setServerVersion } from "./websocket.js";
+import { createSocket, setServerVersion, loadDoc, joinWorkspace, getDocTitle } from "./websocket.js";
 import {
   readDocContent,
   readMultipleDocs,
@@ -130,6 +130,23 @@ server.tool(
 
     const data = await gql.query<{ workspace: { docs: any } }>(LIST_DOCS, vars);
     const docs = data.workspace.docs;
+    const docNodes = docs.edges.map((e: any) => e.node);
+
+    // Enrich docs that have null titles by loading from Yjs
+    const needsTitles = docNodes.filter((d: any) => !d.title);
+    if (needsTitles.length > 0) {
+      await withSocket(async (socket) => {
+        await joinWorkspace(socket, workspaceId);
+        for (const node of needsTitles) {
+          try {
+            const yDoc = await loadDoc(socket, workspaceId, node.id);
+            node.title = getDocTitle(yDoc) || null;
+          } catch {
+            // Keep null title if doc can't be loaded
+          }
+        }
+      });
+    }
 
     return {
       content: [
@@ -140,7 +157,7 @@ server.tool(
               totalCount: docs.totalCount,
               hasNextPage: docs.pageInfo.hasNextPage,
               endCursor: docs.pageInfo.endCursor,
-              docs: docs.edges.map((e: any) => e.node),
+              docs: docNodes,
             },
             null,
             2
@@ -160,8 +177,24 @@ server.tool(
   },
   async ({ workspaceId, docId }) => {
     const data = await gql.query<{ workspace: { doc: any } }>(GET_DOC, { workspaceId, docId });
+    const doc = data.workspace.doc;
+
+    // Enrich null title from Yjs
+    if (doc && !doc.title) {
+      try {
+        const title = await withSocket(async (socket) => {
+          await joinWorkspace(socket, workspaceId);
+          const yDoc = await loadDoc(socket, workspaceId, docId);
+          return getDocTitle(yDoc);
+        });
+        if (title) doc.title = title;
+      } catch {
+        // Keep null title
+      }
+    }
+
     return {
-      content: [{ type: "text", text: JSON.stringify(data.workspace.doc, null, 2) }],
+      content: [{ type: "text", text: JSON.stringify(doc, null, 2) }],
     };
   }
 );
@@ -206,7 +239,7 @@ server.tool(
   },
   async ({ workspaceId, query, maxResults }) => {
     const allDocIds = await getAllDocIds(workspaceId);
-    const results = await withSocket((socket) => searchDocs(socket, workspaceId, query, allDocIds));
+    const { results, docsSearched, docsSkipped } = await withSocket((socket) => searchDocs(socket, workspaceId, query, allDocIds));
     const limited = results.slice(0, maxResults);
 
     return {
@@ -214,8 +247,8 @@ server.tool(
         {
           type: "text",
           text: limited.length === 0
-            ? "No documents found matching the query."
-            : JSON.stringify(limited, null, 2),
+            ? `No documents found matching the query. (${docsSearched} docs searched${docsSkipped > 0 ? `, ${docsSkipped} docs could not be loaded` : ""})`
+            : JSON.stringify({ docsSearched, docsSkipped: docsSkipped || undefined, results: limited }, null, 2),
         },
       ],
     };

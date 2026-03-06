@@ -367,10 +367,11 @@ export async function searchDocs(
   workspaceId: string,
   query: string,
   docIds: string[]
-): Promise<Array<{ docId: string; title: string; snippet: string }>> {
+): Promise<{ results: Array<{ docId: string; title: string; snippet: string }>; docsSearched: number; docsSkipped: number }> {
   await joinWorkspace(socket, workspaceId);
   const results: Array<{ docId: string; title: string; snippet: string }> = [];
   const lowerQuery = query.toLowerCase();
+  let docsSkipped = 0;
 
   for (const docId of docIds) {
     try {
@@ -394,11 +395,11 @@ export async function searchDocs(
         results.push({ docId, title, snippet: snippet.trim() });
       }
     } catch {
-      // Skip docs that can't be loaded
+      docsSkipped++;
     }
   }
 
-  return results;
+  return { results, docsSearched: docIds.length - docsSkipped, docsSkipped };
 }
 
 // --- Mermaid ---
