@@ -14,7 +14,11 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "test": "npx tsx test/integration.ts"
+    "test": "npm run test:unit",
+    "test:unit": "node --import tsx --test test/unit/*.test.ts",
+    "test:e2e:setup": "npx tsx test/e2e/setup.ts",
+    "test:e2e": "npx tsx test/integration.ts",
+    "test:integration": "npx tsx test/integration.ts"
   },
   "keywords": [
     "mcp",
@@ -29,7 +33,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/emmabyte-engineering/affine-mcp.git"
+    "url": "git+https://github.com/emmabyte-engineering/affine-mcp.git"
   },
   "homepage": "https://github.com/emmabyte-engineering/affine-mcp#readme",
   "bugs": {

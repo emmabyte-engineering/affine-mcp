@@ -4,6 +4,16 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { loadConfig, detectServerVersion, type AffineConfig } from "./config.js";
+
+const MAX_MARKDOWN_LENGTH = 1_000_000; // 1MB
+const MAX_DOC_IDS = 100;
+const MAX_TABLE_ROWS = 10_000;
+const MAX_TABLE_COLS = 200;
+
+const markdownInput = z.string().max(MAX_MARKDOWN_LENGTH, "Markdown content exceeds 1MB limit");
+const docIdsInput = z.array(z.string()).max(MAX_DOC_IDS, `Cannot process more than ${MAX_DOC_IDS} docs at once`);
+const headersInput = z.array(z.string()).max(MAX_TABLE_COLS, `Tables cannot exceed ${MAX_TABLE_COLS} columns`);
+const rowsInput = z.array(z.array(z.string())).max(MAX_TABLE_ROWS, `Tables cannot exceed ${MAX_TABLE_ROWS} rows`);
 import { signIn } from "./auth.js";
 import {
   GraphQLClient,
@@ -176,7 +186,7 @@ server.tool(
   "Read multiple documents at once. Returns each doc's title and markdown content. Use this for bulk operations and cross-referencing.",
   {
     workspaceId: z.string().describe("The workspace ID"),
-    docIds: z.array(z.string()).describe("Array of document IDs to read"),
+    docIds: docIdsInput.describe("Array of document IDs to read"),
   },
   async ({ workspaceId, docIds }) => {
     const results = await withSocket((socket) => readMultipleDocs(socket, workspaceId, docIds));
@@ -218,7 +228,7 @@ server.tool(
   {
     workspaceId: z.string().describe("The workspace ID"),
     title: z.string().describe("Document title"),
-    markdown: z.string().optional().describe("Optional markdown content for the document body"),
+    markdown: markdownInput.optional().describe("Optional markdown content for the document body"),
   },
   async ({ workspaceId, title, markdown }) => {
     const docId = await withSocket((socket) => createDocument(socket, workspaceId, title, markdown));
@@ -243,7 +253,7 @@ server.tool(
   {
     workspaceId: z.string().describe("The workspace ID"),
     docId: z.string().describe("The document ID"),
-    markdown: z.string().describe("Markdown content to append"),
+    markdown: markdownInput.describe("Markdown content to append"),
   },
   async ({ workspaceId, docId, markdown }) => {
     await withSocket((socket) => appendMarkdownToDoc(socket, workspaceId, docId, markdown));
@@ -257,7 +267,7 @@ server.tool(
   {
     workspaceId: z.string().describe("The workspace ID"),
     docId: z.string().describe("The document ID"),
-    markdown: z.string().describe("New markdown content to replace the document body"),
+    markdown: markdownInput.describe("New markdown content to replace the document body"),
     title: z.string().optional().describe("Optional new title for the document"),
   },
   async ({ workspaceId, docId, markdown, title }) => {
@@ -428,8 +438,8 @@ server.tool(
   {
     workspaceId: z.string().describe("The workspace ID"),
     docId: z.string().describe("The document ID"),
-    headers: z.array(z.string()).describe("Column header names"),
-    rows: z.array(z.array(z.string())).describe("Array of rows, each row is an array of cell values"),
+    headers: headersInput.describe("Column header names"),
+    rows: rowsInput.describe("Array of rows, each row is an array of cell values"),
   },
   async ({ workspaceId, docId, headers, rows }) => {
     const blockId = await withSocket((socket) => insertTable(socket, workspaceId, docId, headers, rows));
@@ -446,8 +456,8 @@ server.tool(
     workspaceId: z.string().describe("The workspace ID"),
     docId: z.string().describe("The document ID"),
     blockId: z.string().describe("The block ID of the table (from get_tables)"),
-    headers: z.array(z.string()).describe("New column header names"),
-    rows: z.array(z.array(z.string())).describe("New rows, each row is an array of cell values"),
+    headers: headersInput.describe("New column header names"),
+    rows: rowsInput.describe("New rows, each row is an array of cell values"),
   },
   async ({ workspaceId, docId, blockId, headers, rows }) => {
     await withSocket((socket) => updateTable(socket, workspaceId, docId, blockId, headers, rows));

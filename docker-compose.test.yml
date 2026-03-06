@@ -1,0 +1,64 @@
+name: affine-mcp-test
+services:
+  affine:
+    image: ghcr.io/toeverything/affine:stable
+    ports:
+      - '3010:3010'
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      affine_migration:
+        condition: service_completed_successfully
+    volumes:
+      - affine_storage:/root/.affine/storage
+      - affine_config:/root/.affine/config
+    environment:
+      - REDIS_SERVER_HOST=redis
+      - DATABASE_URL=postgresql://affine:affine_test@postgres:5432/affine
+      - AFFINE_INDEXER_ENABLED=false
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3010/info']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  affine_migration:
+    image: ghcr.io/toeverything/affine:stable
+    command: ['sh', '-c', 'node ./scripts/self-host-predeploy.js']
+    environment:
+      - REDIS_SERVER_HOST=redis
+      - DATABASE_URL=postgresql://affine:affine_test@postgres:5432/affine
+      - AFFINE_INDEXER_ENABLED=false
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: affine
+      POSTGRES_PASSWORD: affine_test
+      POSTGRES_DB: affine
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'affine', '-d', 'affine']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  affine_storage:
+  affine_config:

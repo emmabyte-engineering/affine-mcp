@@ -20,7 +20,6 @@ import {
   updateTable,
   getDocComments,
 } from "../src/doc-operations.js";
-import { GraphQLClient } from "../src/graphql.js";
 import type { Socket } from "socket.io-client";
 
 // --- Helpers ---
