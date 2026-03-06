@@ -1,0 +1,44 @@
+{
+  "name": "affine-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for self-hosted AFFiNE instances — read, write, search, and manage docs, tables, diagrams, and comments",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "affine-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "npx tsx test/integration.ts"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "affine",
+    "ai",
+    "claude",
+    "knowledge-base",
+    "wiki"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "markdown-it": "^14.1.1",
+    "socket.io-client": "^4.8.3",
+    "yjs": "^13.6.29",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^25.3.4",
+    "dotenv": "^17.3.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
